@@ -1,0 +1,29 @@
+plugins {
+    id 'java'
+}
+
+group 'org.example'
+version '1.0-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+
+    compile project(':Domain')
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.6.0'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine'
+    compile group: 'org.postgresql', name: 'postgresql', version: '42.2.18'
+
+    //pt rest
+    compile 'org.springframework:spring-context:4.3.8.RELEASE'
+
+    //pt hibernate
+    implementation group: 'org.hibernate', name: 'hibernate-core', version: '5.4.30.Final'
+
+}
+
+test {
+    useJUnitPlatform()
+}

@@ -1,0 +1,8 @@
+rootProject.name = 'SHELET'
+include 'Client'
+include 'Domain'
+include 'Repository'
+include 'Services'
+include 'Server'
+include 'RESTServices'
+

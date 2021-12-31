@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<!DOCTYPE hibernate-configuration SYSTEM
+        "http://www.hibernate.org/dtd/hibernate-configuration-3.0.dtd">
+<hibernate-configuration
+>
+    <session-factory>
+        <!-- Database connection settings -->
+        <property name="connection.driver_class">org.postgresql.Driver</property>
+        <property name="connection.url">jdbc:postgresql://localhost:3333/TalentShow</property>
+        <property name="connection.username">postgres</property>
+        <property name="connection.password">oana210600</property>
+
+        <!-- SQL dialect -->
+        <property name="dialect">org.hibernate.dialect.PostgreSQL95Dialect</property>
+
+        <!--        <property name="hibernate.hbm2ddl.auto">update</property>-->
+
+        <!--        &lt;!&ndash; Echo all executed SQL to stdout &ndash;&gt;-->
+        <!--        <property name="show_sql">true</property>-->
+        <!--        <property name="format_sql">true</property>-->
+
+
+       <!-- <mapping resource="aplicatie.domain/Participant.hbm.xml"/> -->
+
+
+
+    </session-factory>
+</hibernate-configuration>
