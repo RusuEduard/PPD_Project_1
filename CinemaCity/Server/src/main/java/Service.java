@@ -10,7 +10,7 @@ import java.util.concurrent.Executors;
 
 public class Service implements IService {
 
-    public Map<Long, IObserver> clientsList;
+    public Map<String, IObserver> clientsList;
 
     public Service() {
         this.clientsList = new ConcurrentHashMap<>();
@@ -23,7 +23,7 @@ public class Service implements IService {
 
     @Override
     public void login(IObserver client, String name) {
-        clientsList.put((long) 1, client);
+        clientsList.put(name, client);
         System.out.printf("Client %s connected!%n", name);
     }
 
