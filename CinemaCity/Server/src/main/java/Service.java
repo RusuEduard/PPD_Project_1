@@ -1,10 +1,12 @@
+import domain.Spectacol;
+import repository.IRepoSpectacole;
 import services.IObserver;
 import services.IService;
-import services.MyException;
 
 import java.rmi.RemoteException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -16,12 +18,14 @@ import java.util.concurrent.TimeUnit;
 public class Service implements IService {
 
     private final Map<String, IObserver> clientsList;
+    private final IRepoSpectacole repoSpectacole;
 
     private LocalDateTime creationTime;
 
     private Timer timer;
 
-    public Service() {
+    public Service(IRepoSpectacole repoSpectacole) {
+        this.repoSpectacole = repoSpectacole;
         this.clientsList = new ConcurrentHashMap<>();
         this.creationTime = LocalDateTime.now();
         timer = new Timer();
@@ -38,7 +42,7 @@ public class Service implements IService {
                             //System.out.println("finished");
                     }
                 },
-                30000
+                120000
         );
     }
 
@@ -77,6 +81,12 @@ public class Service implements IService {
     @Override
     public void logout(IObserver clientConsole, String name) {
         IObserver client = clientsList.remove(name);
+    }
+
+    @Override
+    public List<Spectacol> getNextShows() {
+        System.out.println("In service");
+        return repoSpectacole.getNextShows(LocalDateTime.now());
     }
 
     @Override

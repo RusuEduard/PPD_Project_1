@@ -5,8 +5,12 @@
 
     <util:properties id="jdbcUtils" location="classpath:service.properties"/>
 
-    <bean id="serviceL" class="Service">
+    <bean id="repoSpectacole" class="repository.RepoSpectacole">
+        <constructor-arg ref="jdbcUtils"/>
+    </bean>
 
+    <bean id="serviceL" class="Service">
+        <constructor-arg ref="repoSpectacole"/>
     </bean>
 
     <bean class="org.springframework.remoting.rmi.RmiServiceExporter">

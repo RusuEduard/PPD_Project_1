@@ -2,5 +2,7 @@ repository/JdbcUtils.java
  repository.JdbcUtils
 repository/Repository.java
  repository.Repository
-repository/iRepoSpectacole.java
- repository.iRepoSpectacole
+repository/IRepoSpectacole.java
+ repository.IRepoSpectacole
+repository/RepoSpectacole.java
+ repository.RepoSpectacole
