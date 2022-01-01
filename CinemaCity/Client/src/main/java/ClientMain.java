@@ -1,3 +1,4 @@
+import org.springframework.aop.scope.ScopedProxyUtils;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import services.IService;
@@ -19,5 +20,9 @@ public class ClientMain {
         console.setService(service);
         console.setName(name);
         console.run();
+        System.out.println("After run");
+        service = null;
+        System.gc();
+        System.exit(0);
     }
 }

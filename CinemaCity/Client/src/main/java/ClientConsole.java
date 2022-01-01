@@ -31,6 +31,7 @@ public class ClientConsole extends UnicastRemoteObject implements IObserver {
             int cmd = in.nextInt();
             switch (cmd) {
                 case 1 -> System.out.println("Ticket bought!\n");
+                case 2 -> System.out.println(service.getTime());
                 case 0 -> {
                     this.running = false;
                     System.out.println("Client finished!\n");
@@ -42,5 +43,13 @@ public class ClientConsole extends UnicastRemoteObject implements IObserver {
 
     private void displayMenu() {
         System.out.print("Choose an option:\n\t1: Buy ticket!\n\t0: Exit!\n");
+    }
+
+    @Override
+    public void serverShutdown() {
+        System.out.println("Server is shutting down!");
+        this.service.logout(this, this.name);
+        this.running = false;
+        this.service = null;
     }
 }

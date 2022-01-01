@@ -3,17 +3,80 @@ import services.IService;
 import services.MyException;
 
 import java.rmi.RemoteException;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Map;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 public class Service implements IService {
 
-    public Map<String, IObserver> clientsList;
+    private final Map<String, IObserver> clientsList;
+
+    private LocalDateTime creationTime;
+
+    private Timer timer;
 
     public Service() {
         this.clientsList = new ConcurrentHashMap<>();
+        this.creationTime = LocalDateTime.now();
+        timer = new Timer();
+        initTimer();
+    }
+
+    private void initTimer() {
+        this.timer.schedule(
+                new TimerTask() {
+                    @Override
+                    public void run() {
+                        if(notifyClients())
+                            System.exit(0);
+                            //System.out.println("finished");
+                    }
+                },
+                30000
+        );
+    }
+
+    private boolean notifyClients() {
+        ExecutorService executor = Executors.newFixedThreadPool(5);
+
+        for (var client : clientsList.entrySet()){
+            if(client.getValue() != null){
+                executor.execute(()->{
+                    System.out.println("Notify");
+                    try {
+                        client.getValue().serverShutdown();
+                    } catch (RemoteException e) {
+                        e.printStackTrace();
+                    }
+                });
+            }
+        }
+        executor.shutdown();
+        try {
+            if (!executor.awaitTermination(60, TimeUnit.SECONDS)) {
+                executor.shutdownNow();
+            }
+        } catch (InterruptedException ex) {
+            executor.shutdownNow();
+            Thread.currentThread().interrupt();
+            return false;
+        }
+        return true;
+    }
+
+    public LocalDateTime getTime() {
+        return creationTime;
+    }
+
+    @Override
+    public void logout(IObserver clientConsole, String name) {
+        IObserver client = clientsList.remove(name);
     }
 
     @Override

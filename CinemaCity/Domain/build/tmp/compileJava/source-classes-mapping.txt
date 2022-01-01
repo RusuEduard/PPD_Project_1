@@ -1,2 +1,8 @@
+domain/Sala.java
+ domain.Sala
+domain/Vanzare.java
+ domain.Vanzare
+domain/Spectacol.java
+ domain.Spectacol
 domain/Entity.java
  domain.Entity
