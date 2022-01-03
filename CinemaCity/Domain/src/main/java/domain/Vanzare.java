@@ -1,20 +1,20 @@
 package domain;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 import java.util.List;
 
 public class Vanzare extends Entity<Long> {
 
-    private Date dataVanzare;
+    private LocalDateTime dataVanzare;
     private int nrBileteVandute;
     private List<Integer> locuriVandute;
     private float suma;
 
-    public Date getDataVanzare() {
+    public LocalDateTime getDataVanzare() {
         return dataVanzare;
     }
 
-    public void setDataVanzare(Date dataVanzare) {
+    public void setDataVanzare(LocalDateTime dataVanzare) {
         this.dataVanzare = dataVanzare;
     }
 

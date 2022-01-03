@@ -1,6 +1,7 @@
 import org.springframework.aop.scope.ScopedProxyUtils;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
+import repository.RepoException;
 import services.IService;
 import services.MyException;
 
@@ -20,11 +21,7 @@ public class ClientMain {
         ClientConsole console = new ClientConsole();
         console.setService(service);
         console.setName(name);
-        try {
-            console.run();
-        } catch (MyException e) {
-            System.out.println(e.getMessage());
-        }
+        console.run();
         System.gc();
         System.exit(0);
     }

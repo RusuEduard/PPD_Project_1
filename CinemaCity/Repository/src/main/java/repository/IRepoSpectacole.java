@@ -9,4 +9,5 @@ public interface IRepoSpectacole extends Repository<Long, Spectacol>{
 
     List<Spectacol> getNextShows(LocalDateTime date);
 
+    List<Integer> getFreeSeatsForShow(Spectacol spectacol) throws RepoException;
 }

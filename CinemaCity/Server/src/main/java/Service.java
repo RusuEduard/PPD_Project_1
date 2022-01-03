@@ -1,35 +1,46 @@
 import domain.Spectacol;
 import repository.IRepoSpectacole;
+import repository.IRepoVanzari;
+import repository.RepoException;
 import services.IObserver;
 import services.IService;
+import services.MyException;
 
 import java.rmi.RemoteException;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Map;
-import java.util.Timer;
-import java.util.TimerTask;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
+import java.util.*;
+import java.util.concurrent.*;
 
 public class Service implements IService {
 
     private final Map<String, IObserver> clientsList;
     private final IRepoSpectacole repoSpectacole;
+    private final IRepoVanzari repoVanzari;
 
-    private LocalDateTime creationTime;
+    private List<Spectacol> nextShows;
 
-    private Timer timer;
+    private final LocalDateTime creationTime;
 
-    public Service(IRepoSpectacole repoSpectacole) {
+    private final Timer timer;
+
+    private final ExecutorService pool;
+
+    public Service(IRepoSpectacole repoSpectacole, IRepoVanzari repoVanzari) {
         this.repoSpectacole = repoSpectacole;
+        this.repoVanzari = repoVanzari;
         this.clientsList = new ConcurrentHashMap<>();
         this.creationTime = LocalDateTime.now();
+        this.nextShows = new ArrayList<>();
+
         timer = new Timer();
+        pool = Executors.newFixedThreadPool(8);
         initTimer();
+
+        initNextShows();
+    }
+
+    private void initNextShows() {
+        this.nextShows = this.repoSpectacole.getNextShows(LocalDateTime.now());
     }
 
     private void initTimer() {
@@ -39,7 +50,6 @@ public class Service implements IService {
                     public void run() {
                         if(notifyClients())
                             System.exit(0);
-                            //System.out.println("finished");
                     }
                 },
                 120000
@@ -85,8 +95,23 @@ public class Service implements IService {
 
     @Override
     public List<Spectacol> getNextShows() {
-        System.out.println("In service");
-        return repoSpectacole.getNextShows(LocalDateTime.now());
+        return this.nextShows;
+    }
+
+    @Override
+    public List<Integer> getFreeSeatsForShow(Spectacol spectacol) throws RepoException {
+        return repoSpectacole.getFreeSeatsForShow(spectacol);
+    }
+
+    @Override
+    public synchronized String buyTickets(Spectacol spectacol, List<Integer> locuriAlese) throws RepoException, MyException {
+        var task = new BuyTicketsTask(repoSpectacole, repoVanzari, spectacol, locuriAlese);
+        Future<String> result =  pool.submit(task);
+        try {
+            return result.get();
+        } catch (InterruptedException | ExecutionException e) {
+            throw new MyException("An error was cought!");
+        }
     }
 
     @Override

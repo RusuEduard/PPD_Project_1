@@ -19,7 +19,6 @@ public class RepoSpectacole implements IRepoSpectacole{
 
     @Override
     public List<Spectacol> getNextShows(LocalDateTime date) {
-        System.out.println("In repo!");
         List<Spectacol> spectacole = new ArrayList<>();
         Connection con = dbUtils.getConnection();
         try (PreparedStatement statement = con.prepareStatement("select * from spectacole where spectacole.data_spectacol > ?")){
@@ -43,6 +42,52 @@ public class RepoSpectacole implements IRepoSpectacole{
         }
         System.out.println(spectacole.size());
         return spectacole;
+    }
+
+    @Override
+    public List<Integer> getFreeSeatsForShow(Spectacol spectacol) throws RepoException {
+        int numberOfSeats = 0;
+        List<Integer> freeSeats = new ArrayList<>();
+        List<Integer> boughtSeats = new ArrayList<>();
+
+        Connection con = dbUtils.getConnection();
+        try (PreparedStatement statement = con.prepareStatement("select sali.nr_locuri from sali inner join spectacole s on sali.id_sala = s.id_sala where s.id_spectacol = ?;")) {
+            statement.setLong(1, spectacol.getId());
+            try (ResultSet set = statement.executeQuery()){
+                if(set.next()){
+                    numberOfSeats = set.getInt("nr_locuri");
+                }
+            }
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+
+        if (numberOfSeats == 0){
+            throw new RepoException("Number of seats for this show was not found!");
+        }
+
+        try (PreparedStatement statement = con.prepareStatement("select nr_loc from bilete inner join vanzari v on v.id_vanzare = bilete.id_vanzare inner join spectacole s on s.id_spectacol = v.id_spectacol where s.id_spectacol = ?")){
+            statement.setLong(1, spectacol.getId());
+            try (ResultSet set = statement.executeQuery()){
+                while (set.next()){
+                    int seatNr = set.getInt("nr_loc");
+                    boughtSeats.add(seatNr);
+                }
+            }
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+
+        if(boughtSeats.size() == numberOfSeats)
+            return freeSeats;
+
+        for (int i = 1; i < numberOfSeats; i++) {
+            if (!boughtSeats.contains(i)){
+                freeSeats.add(i);
+            }
+        }
+
+        return freeSeats;
     }
 
     @Override

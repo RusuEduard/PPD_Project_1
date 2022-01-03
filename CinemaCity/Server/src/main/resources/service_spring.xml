@@ -9,8 +9,13 @@
         <constructor-arg ref="jdbcUtils"/>
     </bean>
 
+    <bean id="repoVanzari" class="repository.RepoVanzari">
+        <constructor-arg ref="jdbcUtils"/>
+    </bean>
+
     <bean id="serviceL" class="Service">
         <constructor-arg ref="repoSpectacole"/>
+        <constructor-arg ref="repoVanzari"/>
     </bean>
 
     <bean class="org.springframework.remoting.rmi.RmiServiceExporter">
